@@ -1,25 +1,34 @@
+import { toHex } from "viem";
 import fs from "fs";
 import path from "path";
-import { sender, entryPoint, rpcUrl, nonce } from "./config";
-
 import {
   Client,
   UserOperationBuilder,
   UserOperationMiddlewareCtx,
 } from "userop";
 
+import { sender, entryPoint, rpcUrl, nonce, toAddress } from "./config";
+import { genCallDataTransferEth } from "./genCallDataTransferEth";
+
 async function main() {
   try {
     console.log("starting to get userOps hash...");
+    // generate client
     const client = await Client.init(rpcUrl, { entryPoint });
 
+    // get callData for eth transfer
+    const callData = await genCallDataTransferEth(toAddress, 0.001);
+
+    // build userOp
+    const nonceHex = toHex(nonce);
     const builder = new UserOperationBuilder().useDefaults({
       sender,
-      nonce,
+      nonce: nonceHex,
+      callData,
     });
-    // let userOp = await builder.buildOp(entryPoint, Number(client.chainId));
     const userOp = await client.buildUserOperation(builder);
 
+    // get userOpHash
     const middleware = new UserOperationMiddlewareCtx(
       userOp,
       entryPoint,

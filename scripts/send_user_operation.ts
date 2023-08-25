@@ -1,22 +1,32 @@
+import { toHex } from "viem";
 import dotenv from "dotenv";
 dotenv.config();
 import { Client, UserOperationBuilder } from "userop";
-import { rpcUrl, entryPoint, sender, nonce } from "./config";
+import { rpcUrl, entryPoint, sender, nonce, toAddress } from "./config";
+import { genCallDataTransferEth } from "./genCallDataTransferEth";
 
 const signature =
-  "0xc895ff014f1f5267af47fcc2833cc3f331ecaac1a988214d045b3176ec339f8077438e45b83e54ace29459ca3b5b44ed9aca0f8f56b35e43baa47c07ec7f735a1b";
+  "0xb5a96d113a30346c0a9fd501c19b87e0777f69ffdf25b2ccf4b9c4716e39e9a4534378ea1fedf8ff6ce8b7313676d61f1ec1f061e98685277a24e8c6e0aea7411b";
 
 async function main() {
   try {
+    // create userOp client
     const client = await Client.init(rpcUrl, { entryPoint });
 
+    // generate callData to transfer 0.001 eth
+    const callData = await genCallDataTransferEth(toAddress, 0.001);
+
+    // build userOp
+    const nonceHex = toHex(nonce);
     const builder = new UserOperationBuilder().useDefaults({
       sender,
-      nonce: "0x0",
+      nonce: nonceHex,
       signature,
+      callData,
     });
     const userOp = await client.buildUserOperation(builder);
 
+    // generate output for pilmico bundler
     const output = {
       jsonrpc: "2.0",
       id: 5,
