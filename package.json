@@ -14,7 +14,7 @@
         "test:spec": "./test/run-spec-tests.sh",
         "lint": "rome check ./",
         "lint:fix": "rome check ./ --apply",
-        "format": "rome foramt ./ --write" 
+        "format": "rome foramt ./ --write"
     },
     "devDependencies": {
         "@swc/core": "^1.3.56",
@@ -32,5 +32,9 @@
     },
     "workspaces": [
         "packages/*"
-    ]
+    ],
+    "dependencies": {
+        "dotenv": "^16.0.3",
+        "userop": "^0.3.2"
+    }
 }
