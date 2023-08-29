@@ -42,8 +42,6 @@ export function getAltoCli(): yargs.Argv {
   alto.recommendCommands(); //.strict()
   alto.config();
 
-  console.log({ alto: alto.argv });
-
   // yargs.command and all ./cmds
   registerCommandToYargs(alto, bundlerCommand);
 
